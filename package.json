@@ -1,0 +1,14 @@
+{
+  "name": "hopecare-help-builder",
+  "version": "1.0.0",
+  "description": "Hope Care AI ヘルプサイト ビルドスクリプト",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

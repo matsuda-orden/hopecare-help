@@ -1,0 +1,10 @@
+# 環境変数（シークレットを含むため絶対にコミットしない）
+.env
+.env.local
+
+# Node.js
+node_modules/
+
+# ビルド生成物（images/ はデプロイ時にGCSへ直接アップロード）
+images/
+dist/
