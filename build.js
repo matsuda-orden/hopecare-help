@@ -392,15 +392,23 @@ async function build() {
   let html = fs.readFileSync(INDEX_HTML, 'utf8');
 
   const articlesJs = articlesToJs(articles);
-  const newHtml = html.replace(
-    /const articles = \[[\s\S]*?\];\s*\/\* ====== 描画 ======/,
-    `const articles = [\n${articlesJs}\n];\n\n/* ====== 描画 ======`
-  );
 
-  if (newHtml === html) {
+  // 正規表現を使わず indexOf で確実に置き換え
+  const START = 'const articles = [';
+  const END   = '/* ====== 描画 ======';
+  const startIdx = html.indexOf(START);
+  const endIdx   = html.indexOf(END);
+
+  if (startIdx === -1 || endIdx === -1) {
     console.error('❌ articles 配列の置き換えに失敗しました。index.html の構造を確認してください。');
+    console.error(`   START(${START}) 位置: ${startIdx}`);
+    console.error(`   END(${END}) 位置: ${endIdx}`);
     process.exit(1);
   }
+
+  const newHtml = html.substring(0, startIdx)
+    + `const articles = [\n${articlesJs}\n];\n\n`
+    + html.substring(endIdx);
 
   fs.writeFileSync(INDEX_HTML, newHtml, 'utf8');
 
