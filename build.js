@@ -393,7 +393,7 @@ async function build() {
 
   const articlesJs = articlesToJs(articles);
   const newHtml = html.replace(
-    /const articles = \[[\s\S]*?\];\n\n\/\* ====== 描画 ======/,
+    /const articles = \[[\s\S]*?\];\r?\n\r?\n\/\* ====== 描画 ======/,
     `const articles = [\n${articlesJs}\n];\n\n/* ====== 描画 ======`
   );
 
