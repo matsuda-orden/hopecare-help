@@ -81,10 +81,15 @@ async function downloadImage(url, blockId) {
   // 白余白を自動トリミング（SVG以外）
   if (ext !== 'svg') {
     try {
+      const before = await sharp(filepath).metadata();
       const trimmed = await sharp(filepath)
-        .trim({ background: '#ffffff', threshold: 20 })
+        .trim({ threshold: 50 })
         .toBuffer();
+      const after = await sharp(trimmed).metadata();
       fs.writeFileSync(filepath, trimmed);
+      if (before.width !== after.width || before.height !== after.height) {
+        console.log(`    ✂️  余白削除: ${before.width}×${before.height} → ${after.width}×${after.height}`);
+      }
     } catch (err) {
       console.warn(`    ⚠️  トリミングスキップ (${filename}): ${err.message}`);
     }
