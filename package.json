@@ -6,7 +6,8 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "@notionhq/client": "^2.2.15"
+    "@notionhq/client": "^2.2.15",
+    "sharp": "^0.33.5"
   },
   "engines": {
     "node": ">=18"

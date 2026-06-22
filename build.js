@@ -19,6 +19,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
 // ===== 設定 =====
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
@@ -50,7 +51,7 @@ async function downloadImage(url, blockId) {
   const filename = `${blockId}.${ext}`;
   const filepath = path.join(IMAGES_DIR, filename);
 
-  return new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     const request = (targetUrl) => {
       const mod = targetUrl.startsWith('https') ? https : http;
       const file = fs.createWriteStream(filepath);
@@ -67,7 +68,7 @@ async function downloadImage(url, blockId) {
           return reject(new Error(`HTTP ${res.statusCode} for ${targetUrl}`));
         }
         res.pipe(file);
-        file.on('finish', () => { file.close(); resolve(`images/${filename}`); });
+        file.on('finish', () => { file.close(); resolve(); });
       }).on('error', (err) => {
         file.destroy();
         fs.unlink(filepath, () => {});
@@ -76,6 +77,20 @@ async function downloadImage(url, blockId) {
     };
     request(url);
   });
+
+  // 白余白を自動トリミング（SVG以外）
+  if (ext !== 'svg') {
+    try {
+      const trimmed = await sharp(filepath)
+        .trim({ background: '#ffffff', threshold: 20 })
+        .toBuffer();
+      fs.writeFileSync(filepath, trimmed);
+    } catch (err) {
+      console.warn(`    ⚠️  トリミングスキップ (${filename}): ${err.message}`);
+    }
+  }
+
+  return `images/${filename}`;
 }
 
 // ===== リッチテキスト変換 =====
